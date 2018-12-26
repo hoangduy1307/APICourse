@@ -10,7 +10,9 @@ namespace APICourse.TranferModel
     {
         public int Id { get; set; }
         public int Idclass { get; set; }
+        public string NameClass { get; set; }
         public int Idteacher { get; set; }
+        public string Nameteacher { get; set; }
         public int Session { get; set; }
         public DateTime Day { get; set; }
         public int? State { get; set; }
@@ -24,6 +26,8 @@ namespace APICourse.TranferModel
             this.Session = x.Session;
             this.Day = x.Day;
             this.State = x.State;
+            this.Nameteacher = null;
+            this.NameClass = null;
         }
     }
 }

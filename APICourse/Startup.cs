@@ -27,7 +27,7 @@ namespace APICourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            var connection = @"Server=DESKTOP-OMUNA17\SQLEXPRESS;Database=ContainerCourse;Trusted_Connection=True;ConnectRetryCount=0";
+            var connection = @"Server=DESKTOP-3MGMVIV;Database=ContainerCourse;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<ContainerCourseContext>(options => options.UseSqlServer(connection));
         }
 
