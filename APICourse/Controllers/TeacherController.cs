@@ -102,6 +102,7 @@ namespace APICourse.Controllers
                     if(checkAdd != -1)
                     {
                         msg.ReturnMessage = "";
+                        msg.IsSuccess = true;
                     }
                     TeacherModel temp = new TeacherModel(bien);
                     msg.IsSuccess = true;
