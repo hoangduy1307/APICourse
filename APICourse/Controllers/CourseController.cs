@@ -316,7 +316,7 @@ namespace APICourse.Controllers
                 return true;
             return false;
         }
-
+       
         private bool Exitclass(string id)
         {
             var bien = _context.Class.Where(x => x.Idcourse == id).SingleOrDefault();
