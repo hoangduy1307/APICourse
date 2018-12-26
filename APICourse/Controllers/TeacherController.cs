@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using APICourse.Common;
 using APICourse.Models;
 using APICourse.TranferModel;
 using APICourse.Utility;
@@ -87,6 +88,7 @@ namespace APICourse.Controllers
                 if(check == -1)
                 {
                     Teacher bien = new Teacher();
+                    bien.Idteacher = TaoMa();
                     bien.Name = data.Name;
                     bien.Sex = data.Sex;
                     bien.Phone = data.Phone;
@@ -101,13 +103,25 @@ namespace APICourse.Controllers
                     var checkAdd = Exist_Teacher(data.Email);
                     if(checkAdd != -1)
                     {
-                        msg.ReturnMessage = "";
-                        msg.IsSuccess = true;
+                        Account tk = new Account();
+                        tk.Idteacher = checkAdd;
+                        tk.Username = bien.Email;
+                        tk.Password = Encryptor.MD5Hash(bien.Email);
+                        tk.Status = 1;
+                        _context.Account.Add(tk);
+                        _context.SaveChanges();
                     }
                     TeacherModel temp = new TeacherModel(bien);
                     msg.IsSuccess = true;
                     msg.Data = temp;
                     msg.ReturnMessage = "Thêm thành công!";
+                    return Ok(msg);
+
+                }
+                else
+                {
+                    msg.IsSuccess = false;
+                    msg.ReturnMessage = "Thêm giáo viên không thành công! Email đã tồn tại!";
                     return Ok(msg);
                 }
                 
@@ -115,22 +129,22 @@ namespace APICourse.Controllers
             catch (Exception ex)
             {
                 msg.IsSuccess = false;
-                msg.ReturnMessage = "Thêm khóa học không thành công! " + ex + " lỗi!";
+                msg.ReturnMessage = "Thêm giáo viên không thành công! " + ex + " lỗi!";
                 return Ok(msg);
             }
         }
 
         [HttpGet]
-        [Route("SearchCourse")]
-        public IActionResult SearchCourse(string key)
+        [Route("SearchTeacher")]
+        public IActionResult SearchTeacher(string key)
         {
-            var msg = new Message<CourseModel>();
+            var msg = new Message<TeacherModel>();
             try
             {
-                var data = _context.Course.Where(x => x.Name.Contains(key) || x.Contents.Contains(key)).SingleOrDefault();
+                var data = _context.Teacher.Where(x => x.Name.Contains(key) || x.Email.Contains(key) || x.Phone.Contains(key)).SingleOrDefault();
                 if (data != null)
                 {
-                    CourseModel result = new CourseModel(data);
+                    TeacherModel result = new TeacherModel(data);
                     msg.IsSuccess = true;
                     msg.Data = result;
                     return Ok(msg);
@@ -152,28 +166,37 @@ namespace APICourse.Controllers
 
 
         [HttpPost]
-        [Route("UpdateCourse")]
-        public IActionResult UpdateCourse(Course data)
+        [Route("UpdateTeacher")]
+        public IActionResult UpdateTeacher(TeacherModel data)
         {
-            var msg = new Message<CourseModel>();
+            var msg = new Message<TeacherModel>();
             try
             {
-                var bien = _context.Course.Where(x => x.Idcourse == data.Idcourse).SingleOrDefault();
+                var bien = _context.Teacher.Find(data.Idteacher);
                 if (bien != null)
                 {
                     bien.Name = data.Name;
-                    bien.Age = data.Age;
-                    bien.Maxnumber = data.Maxnumber;
-                    bien.Time = data.Time;
-                    bien.Contents = data.Contents;
-                    bien.Fee = data.Fee;
-                    bien.Image = data.Image;
+                    bien.Sex = data.Sex;
+                    bien.Phone = data.Phone;
+                    bien.Address = data.Address;
+                    bien.Email = data.Email;
+                    bien.Knowledge = data.Knowledge;
+                    bien.Status = data.Status;
 
                     _context.Entry(bien).State = EntityState.Modified;
                     _context.SaveChanges();
-                    CourseModel temp = new CourseModel(bien);
+
+                    var bien1 = _context.Account.Find(data.Idteacher);
+                    if (bien1 != null)
+                    {
+                        bien1.Status = data.Status;
+                        _context.Entry(bien1).State = EntityState.Modified;
+                        _context.SaveChanges();
+                    }
+
+                    TeacherModel temp = new TeacherModel(bien);
                     msg.IsSuccess = true;
-                    msg.ReturnMessage = "Cập nhật thông tin khóa học thành công!";
+                    msg.ReturnMessage = "Cập nhật thông tin giáo viên thành công!";
                     msg.Data = temp;
                     return Ok(msg);
                 }
@@ -199,37 +222,42 @@ namespace APICourse.Controllers
 
         // DELETE api/<controller>/5
         [HttpPost("{id}")]
-        [Route("DeleteCourse")]
-        public IActionResult DeleteCourse(string id)
+        [Route("DeleteTeacher")]
+        public IActionResult DeleteTeacher(int id)
         {
-            var msg = new Message<CourseModel>();
+            var msg = new Message<TeacherModel>();
             try
             {
-                var bien = _context.Course.Where(x => x.Idcourse == id).SingleOrDefault();
-                if (bien != null)
+                var bien = _context.Teacher.Where(a => a.Idteacher == id).SingleOrDefault();
+                var bien1 = _context.Teachingclass.Where(a => a.Idteacher == id).SingleOrDefault();
+                if (bien != null) // ton tai
                 {
-                    if (Exitclass(id) == false)
-                    {
-                        _context.Course.Remove(bien);
-                        _context.SaveChanges();
-                        CourseModel temp = new CourseModel(bien);
-                        msg.IsSuccess = true;
-                        msg.ReturnMessage = "Xóa khóa học #" + id + " thành công!";
-                        msg.Data = temp;
-                        return Ok(msg);
-                    }
-                    else
+                    if (bien1 != null) // ton tai
                     {
                         msg.IsSuccess = false;
-                        msg.ReturnMessage = "Không thể xóa khóa học #" + id + " này!";
+                        msg.ReturnMessage = "Không thể xóa giáo viên!";
                         return Ok(msg);
                     }
+                    else // khong ton tai
+                    {
+                        var ac = _context.Account.Where(a => a.Idteacher == id).SingleOrDefault();
+                        _context.Account.Remove(ac);
+                        _context.SaveChanges();
 
+                        _context.Teacher.Remove(bien);
+                        _context.SaveChanges();
+
+                        TeacherModel temp = new TeacherModel(bien);
+                        msg.IsSuccess = true;
+                        msg.Data = temp;
+                        msg.ReturnMessage = "Xóa giáo viên thành công!";
+                        return Ok(msg);
+                    }
                 }
                 else
                 {
                     msg.IsSuccess = false;
-                    msg.ReturnMessage = "Xóa khóa học #" + id + " không thành công!";
+                    msg.ReturnMessage = "Giáo viên không tồn tại!";
                     return Ok(msg);
                 }
             }
@@ -259,5 +287,28 @@ namespace APICourse.Controllers
             }
             return -1;
         }
+
+        private int TaoMa()
+        {
+            int maID;
+            Random rand = new Random();
+            do
+            {
+                int a = _context.Teacher.Max(r => r.Idteacher);
+                maID = a + 1;
+
+            }
+            while (!KiemtraID(maID));
+            return maID;
+        }
+
+        private bool KiemtraID(int maID)
+        {
+                var temp = _context.Teacher.Find(maID);
+                if (temp == null)
+                    return true;
+                return false;
+        }
+
     }
 }
