@@ -101,7 +101,7 @@ namespace APICourse.Controllers
                     var checkAdd = Exist_Teacher(data.Email);
                     if(checkAdd != -1)
                     {
-
+                        msg.ReturnMessage = "";
                     }
                     TeacherModel temp = new TeacherModel(bien);
                     msg.IsSuccess = true;
