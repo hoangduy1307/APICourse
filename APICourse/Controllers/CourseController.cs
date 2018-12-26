@@ -139,6 +139,69 @@ namespace APICourse.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("FilterCoursesByAge")]
+        public IActionResult FilterCoursesByAge(string age)
+        {
+            var msg = new Message<CourseModel>();
+            int index = -1;
+            index = age.IndexOf("-");
+            if (index > -1)
+            {
+                int minage = 0;
+                int maxage = 0;
+                minage = int.Parse(age.Substring(0, index).Trim());
+                maxage = int.Parse(age.Substring(index + 1).Trim());
+                var result = _context.Course.Where(x => x.Age <= maxage && x.Age >= minage).SingleOrDefault();
+
+                CourseModel temp = new CourseModel(result);
+                msg.Data = temp;
+                return Ok(msg);
+            }
+            else
+            {
+                int minage = int.Parse(age);
+                var bien = _context.Course.Where(x => x.Age > minage).SingleOrDefault();
+
+                CourseModel temp = new CourseModel(bien);
+                msg.Data = temp;
+                msg.IsSuccess = false;
+                msg.ReturnMessage = "Không tìm thấy yêu cầu!";
+                return Ok(msg);
+            }
+        }
+
+        [HttpGet]
+        [Route("FilterCoursesByPrice")]
+        public IActionResult FilterCoursesByPrice(string price)
+        {
+            var msg = new Message<CourseModel>();
+            int index = -1;
+            index = price.IndexOf("-");
+            if (index > -1)
+            {
+                decimal minprice = 0;
+                decimal maxprice = 0;
+                minprice = decimal.Parse(price.Substring(0, index).Trim());
+                maxprice = decimal.Parse(price.Substring(index + 1).Trim());
+                var result = _context.Course.Where(x => x.Fee < maxprice && x.Fee >= minprice).SingleOrDefault();
+
+                CourseModel temp = new CourseModel(result);
+                msg.Data = temp;
+                return Ok(msg);
+            }
+            else
+            {
+                decimal minprice = decimal.Parse(price);
+                var bien = _context.Course.Where(x => x.Fee >= minprice).SingleOrDefault();
+
+                CourseModel temp = new CourseModel(bien);
+                msg.Data = temp;
+                msg.IsSuccess = false;
+                msg.ReturnMessage = "Không tìm thấy yêu cầu!";
+                return Ok(msg);
+            }
+        }
 
         [HttpPost]
         [Route("UpdateCourse")]
@@ -201,6 +264,7 @@ namespace APICourse.Controllers
                     {
                         _context.Course.Remove(bien);
                         _context.SaveChanges();
+
                         CourseModel temp = new CourseModel(bien);
                         msg.IsSuccess = true;
                         msg.ReturnMessage = "Xóa khóa học #" + id + " thành công!";
