@@ -138,13 +138,18 @@ namespace APICourse.Controllers
         [Route("SearchTeacher")]
         public IActionResult SearchTeacher(string key)
         {
-            var msg = new Message<TeacherModel>();
+            var msg = new Message<List<TeacherModel>>();
             try
             {
-                var data = _context.Teacher.Where(x => x.Name.Contains(key) || x.Email.Contains(key) || x.Phone.Contains(key)).SingleOrDefault();
+                var data = _context.Teacher.Where(x => x.Name.Contains(key) || x.Email.Contains(key) || x.Phone.Contains(key)).ToList();
                 if (data != null)
                 {
-                    TeacherModel result = new TeacherModel(data);
+                    List<TeacherModel> result = new List<TeacherModel>();
+                    foreach(var i in data)
+                    {
+                        TeacherModel temp = new TeacherModel(i);
+                        result.Add(temp);
+                    }
                     msg.IsSuccess = true;
                     msg.Data = result;
                     return Ok(msg);

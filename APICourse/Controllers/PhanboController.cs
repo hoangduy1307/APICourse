@@ -41,7 +41,7 @@ namespace APICourse.Controllers
                         };
             return Ok(model);
         }
-        [HttpPost]
+        [HttpGet]
         [Route("GetAllClass")]
         public IActionResult GetAllClass()
         {
@@ -49,7 +49,7 @@ namespace APICourse.Controllers
 
             return Ok(list);
         }
-        [HttpPost]
+        [HttpGet]
         [Route("GetAllTeacher")]
         public IActionResult GetAllTeacher()
         {
@@ -58,8 +58,9 @@ namespace APICourse.Controllers
         }
         [HttpPost]
         [Route("GetphabobyIdlopandIdteacher")]
-        public IActionResult GetphabobyIdlopandIdteacher(int Idclass, int Idteacher)
+        public IActionResult GetphabobyIdlopandIdteacher([FromBody]int[] id)
         {
+            //idclass = id[0] ; idteacher = id[1]
             var model = from a in db.Teacher
                         join b in db.Phanbo
                         on a.Idteacher equals b.Idteacher
@@ -67,7 +68,7 @@ namespace APICourse.Controllers
                         on b.Idclass equals c.Idclass
                         join d in db.Course
                         on c.Idcourse equals d.Idcourse
-                        where b.Idclass == Idclass && b.Idteacher == Idteacher
+                        where b.Idclass == id[0] && b.Idteacher == id[1]
                         select new PhanboModel
                         {
                             Idclass = c.Idclass,
@@ -79,7 +80,7 @@ namespace APICourse.Controllers
                             StartDay = c.StartDay,
                             FinishDay = c.FinishDay,
                         };
-            return Ok(model);
+            return Ok(model); 
         }
         public PhanboModel GetbyIdlopandIdteacher(int Idclass, int Idteacher)
         {
@@ -142,18 +143,19 @@ namespace APICourse.Controllers
 
         [HttpPost]
         [Route("AddPhanbo")]
-        public IActionResult AddPhanbo(int Idclass, int IdTeacher)
+        public IActionResult AddPhanbo([FromBody] int[] id)
 
         {
+            // id[0] =Idclass ;id[1]=IdTeacher;
             var mgs = new Message<PhanboModel>();
-            var model = db.Phanbo.Where(x => x.Idclass == Idclass && x.Idteacher == IdTeacher).SingleOrDefault();
+            var model = db.Phanbo.Where(x => x.Idclass == id[0] && x.Idteacher == id[1]).SingleOrDefault();
             if (model != null)
+            {
+                try
                 {
-                    try
-                    {
                     Phanbo phanbo = new Phanbo();
-                    phanbo.Idclass = Idclass;
-                    phanbo.Idteacher = IdTeacher;
+                    phanbo.Idclass = id[0];
+                    phanbo.Idteacher = id[1];
                     db.Phanbo.Add(phanbo);
                     db.SaveChanges();
                     PhanboModel pb = new PhanboModel();
@@ -164,22 +166,22 @@ namespace APICourse.Controllers
                     return Ok(mgs);
 
                 }
-                    catch (Exception ex)
+                catch (Exception ex)
                 {
                     mgs.IsSuccess = false;
                     mgs.ReturnMessage = "Exception: " + ex;
                     return Ok(mgs);
                 }
-                }
-                else
-                {
+            }
+            else
+            {
                 mgs.IsSuccess = false;
                 mgs.ReturnMessage = "Đã tồn tại phân bố giang viên #" + IdTeacher.ToString() + "cho lớp #" + Idclass.ToString();
                 return Ok(mgs);
-                 }
-           
+            }
+
         }
-        [HttpDelete]
+        [HttpPost]
         [Route("RemovePhanbo")]
         public IActionResult RemovePhanbo(int Idclass, int IdTeacher)
         {

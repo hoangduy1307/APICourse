@@ -43,7 +43,7 @@ namespace APICourse.Controllers
         }
 
         // GET api/<controller>/5
-        [HttpPost("{id}")]
+        [HttpPost]
         [Route("GetCourse")]
         public IActionResult GetCourse(string id)
         {
@@ -109,7 +109,7 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("SearchCourse")]
         public IActionResult SearchCourse(string key)
         {
@@ -139,7 +139,7 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("FilterCoursesByAge")]
         public IActionResult FilterCoursesByAge(string age)
         {
@@ -171,7 +171,7 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("FilterCoursesByPrice")]
         public IActionResult FilterCoursesByPrice(string price)
         {
@@ -250,7 +250,7 @@ namespace APICourse.Controllers
         }
 
         // DELETE api/<controller>/5
-        [HttpPost("{id}")]
+        [HttpPost]
         [Route("DeleteCourse")]
         public IActionResult DeleteCourse(string id)
         {

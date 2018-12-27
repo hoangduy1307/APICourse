@@ -46,7 +46,7 @@ namespace APICourse.Controllers
             return Ok(list);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("Search_Class")]
         public IActionResult Search_Class(string key)
         {
@@ -126,7 +126,7 @@ namespace APICourse.Controllers
 
             
         }
-        [HttpGet]
+        [HttpPost]
         [Route("FindClassById")]
         public IActionResult FindClassById(int id)
         {
