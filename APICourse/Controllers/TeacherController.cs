@@ -134,7 +134,7 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("SearchTeacher")]
         public IActionResult SearchTeacher(string key)
         {
@@ -219,14 +219,10 @@ namespace APICourse.Controllers
                 return Ok(msg);
             }
         }
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+       
 
         // DELETE api/<controller>/5
-        [HttpPost("{id}")]
+        [HttpPost]
         [Route("DeleteTeacher")]
         public IActionResult DeleteTeacher(int id)
         {

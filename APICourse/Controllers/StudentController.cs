@@ -41,11 +41,11 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         [Route("Search_Student")]
         public IActionResult Search_Student(string id)
         {
-            var msg = new Message<StudentModel>();
+            var msg = new Message<List<StudentModel>>();
             try
             {
                 var bien = _context.Student.Where(x => x.Name.Contains(id) || x.Address.Contains(id) || x.NameParent.Contains(id)).ToList();
@@ -151,7 +151,7 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         [Route("Delete_Student")]
         public IActionResult Delete_Student(int id)
         {
@@ -196,7 +196,7 @@ namespace APICourse.Controllers
             }
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         [Route("Class_student")]
         public IActionResult Class_student(int id_student, int id_class)
         {

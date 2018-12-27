@@ -17,7 +17,7 @@ namespace APICourse.Controllers
     public class PhanboController : Controller
     {
         ContainerCourseContext db = new ContainerCourseContext();
-        [HttpPost]
+        [HttpGet]
         [Route("GetAllPhanphoi")]
         public IActionResult GetAllPhanphoi()
         {
@@ -176,23 +176,24 @@ namespace APICourse.Controllers
             else
             {
                 mgs.IsSuccess = false;
-                mgs.ReturnMessage = "Đã tồn tại phân bố giang viên #" + IdTeacher.ToString() + "cho lớp #" + Idclass.ToString();
+                mgs.ReturnMessage = "Đã tồn tại phân bố giang viên #" + id[1].ToString() + "cho lớp #" +id[0].ToString();
                 return Ok(mgs);
             }
 
         }
         [HttpPost]
         [Route("RemovePhanbo")]
-        public IActionResult RemovePhanbo(int Idclass, int IdTeacher)
+        public IActionResult RemovePhanbo([FromBody] int[] id)
         {
+            // id[0]=Idclass, id[1]=IdTeacher
             var mgs = new Message<PhanboModel>();
             try
             {
-                Phanbo cl = db.Phanbo.Where(x => x.Idclass == Idclass && x.Idteacher == IdTeacher).SingleOrDefault();
+                Phanbo cl = db.Phanbo.Where(x => x.Idclass == id[0] && x.Idteacher == id[1]).SingleOrDefault();
                 if (cl == null)
                 {
                     mgs.IsSuccess = false;
-                    mgs.ReturnMessage = "Không tìm thấy Sự phan bổ này #" ;
+                    mgs.ReturnMessage = "Không tìm thấy Sự phan bổ này #";
                     return Ok(mgs);
                 }
                 else
@@ -202,10 +203,10 @@ namespace APICourse.Controllers
                     db.Phanbo.Remove(cl);
                     db.SaveChanges();
                     PhanboModel pm = new PhanboModel();
-                    pm = GetbyIdlopandIdteacher(Idclass, IdTeacher);
+                    pm = GetbyIdlopandIdteacher(id[0], id[1]);
                     mgs.IsSuccess = true;
                     mgs.Data = pm;
-                    mgs.ReturnMessage = "Xóa Phân bổ thành công " ;
+                    mgs.ReturnMessage = "Xóa Phân bổ thành công ";
                     return Ok(mgs);
 
                 }

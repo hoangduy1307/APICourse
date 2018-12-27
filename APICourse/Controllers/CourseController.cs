@@ -113,13 +113,18 @@ namespace APICourse.Controllers
         [Route("SearchCourse")]
         public IActionResult SearchCourse(string key)
         {
-            var msg = new Message<CourseModel>();
+            var msg = new Message<List<CourseModel>>();
             try
             {
-                var data = _context.Course.Where(x => x.Name.Contains(key) || x.Contents.Contains(key)).SingleOrDefault();
+                var data = _context.Course.Where(x => x.Name.Contains(key) || x.Contents.Contains(key)).ToList();
                 if (data != null)
                 {
-                    CourseModel result = new CourseModel(data);
+                    List<CourseModel> result = new List<CourseModel>();
+                    foreach (var i in data)
+                    {
+                        CourseModel temp = new CourseModel(i);
+                        result.Add(temp);
+                    }
                     msg.IsSuccess = true;
                     msg.Data = result;
                     return Ok(msg);
@@ -143,7 +148,7 @@ namespace APICourse.Controllers
         [Route("FilterCoursesByAge")]
         public IActionResult FilterCoursesByAge(string age)
         {
-            var msg = new Message<CourseModel>();
+            var msg = new Message<List<CourseModel>>();
             int index = -1;
             index = age.IndexOf("-");
             if (index > -1)
@@ -152,19 +157,29 @@ namespace APICourse.Controllers
                 int maxage = 0;
                 minage = int.Parse(age.Substring(0, index).Trim());
                 maxage = int.Parse(age.Substring(index + 1).Trim());
-                var result = _context.Course.Where(x => x.Age <= maxage && x.Age >= minage).SingleOrDefault();
+                var data = _context.Course.Where(x => x.Age <= maxage && x.Age >= minage).ToList();
 
-                CourseModel temp = new CourseModel(result);
-                msg.Data = temp;
+                List<CourseModel> result = new List<CourseModel>();
+                foreach (var i in data)
+                {
+                    CourseModel temp = new CourseModel(i);
+                    result.Add(temp);
+                }
+                msg.Data = result;
                 return Ok(msg);
             }
             else
             {
                 int minage = int.Parse(age);
-                var bien = _context.Course.Where(x => x.Age > minage).SingleOrDefault();
+                var data = _context.Course.Where(x => x.Age > minage).ToList();
 
-                CourseModel temp = new CourseModel(bien);
-                msg.Data = temp;
+                List<CourseModel> result = new List<CourseModel>();
+                foreach (var i in data)
+                {
+                    CourseModel temp = new CourseModel(i);
+                    result.Add(temp);
+                }
+                msg.Data = result;
                 msg.IsSuccess = false;
                 msg.ReturnMessage = "Không tìm thấy yêu cầu!";
                 return Ok(msg);
@@ -175,7 +190,7 @@ namespace APICourse.Controllers
         [Route("FilterCoursesByPrice")]
         public IActionResult FilterCoursesByPrice(string price)
         {
-            var msg = new Message<CourseModel>();
+            var msg = new Message<List<CourseModel>>();
             int index = -1;
             index = price.IndexOf("-");
             if (index > -1)
@@ -184,19 +199,29 @@ namespace APICourse.Controllers
                 decimal maxprice = 0;
                 minprice = decimal.Parse(price.Substring(0, index).Trim());
                 maxprice = decimal.Parse(price.Substring(index + 1).Trim());
-                var result = _context.Course.Where(x => x.Fee < maxprice && x.Fee >= minprice).SingleOrDefault();
+                var result = _context.Course.Where(x => x.Fee < maxprice && x.Fee >= minprice).ToList();
 
-                CourseModel temp = new CourseModel(result);
-                msg.Data = temp;
+                List<CourseModel> data = new List<CourseModel>();
+                foreach (var i in result)
+                {
+                    CourseModel temp = new CourseModel(i);
+                    data.Add(temp);
+                }
+                msg.Data = data;
                 return Ok(msg);
             }
             else
             {
                 decimal minprice = decimal.Parse(price);
-                var bien = _context.Course.Where(x => x.Fee >= minprice).SingleOrDefault();
+                var bien = _context.Course.Where(x => x.Fee >= minprice).ToList();
 
-                CourseModel temp = new CourseModel(bien);
-                msg.Data = temp;
+                List<CourseModel> data = new List<CourseModel>();
+                foreach (var i in bien)
+                {
+                    CourseModel temp = new CourseModel(i);
+                    data.Add(temp);
+                }
+                msg.Data = data;
                 msg.IsSuccess = false;
                 msg.ReturnMessage = "Không tìm thấy yêu cầu!";
                 return Ok(msg);

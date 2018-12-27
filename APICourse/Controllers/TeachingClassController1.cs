@@ -17,7 +17,7 @@ namespace APICourse.Controllers
     {
         ContainerCourseContext db = new ContainerCourseContext();
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetAll")]
         public IActionResult GetAll()
         {
